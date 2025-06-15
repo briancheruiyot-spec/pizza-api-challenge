@@ -1,0 +1,52 @@
+# Byte-compiled / optimized / DLL files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Virtual environment
+venv/
+env/
+.Python/
+pipenv/
+*.venv/
+pipenv-*.txt
+
+# Flask stuff
+instance/
+*.log
+
+# SQLite databases
+*.sqlite
+*.db
+*.sqlite3
+
+# Migration folders (if you want to exclude them)
+# migrations/
+
+# IDE specific files
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# Environment variables
+.env
+.env.local
+.env.development
+.env.test
+
+# Python packaging
+build/
+dist/
+*.egg-info/
+
+# Testing
+.coverage
+htmlcov/
+.pytest_cache/
+
+# macOS
+.DS_Store
+
+# Windows
+Thumbs.db
