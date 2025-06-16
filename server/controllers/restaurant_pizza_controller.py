@@ -1,43 +1,36 @@
+# server/controllers/restaurant_pizza_controller.py
 from flask import Blueprint, jsonify, request
-from ..models import db, RestaurantPizza, Restaurant, Pizza
+from server.models import db, RestaurantPizza, Pizza, Restaurant
 
-restaurant_pizzas_bp = Blueprint('restaurant_pizzas', __name__)
+restaurant_pizza_bp = Blueprint('restaurant_pizzas', __name__, url_prefix='/restaurant_pizzas')
 
-@restaurant_pizzas_bp.route('', methods=['POST'])
+@restaurant_pizza_bp.route('', methods=['POST'])
 def create_restaurant_pizza():
-    data = request.get_json()
-    
-    # Validation
-    if not all(key in data for key in ['price', 'pizza_id', 'restaurant_id']):
-        return jsonify({"errors": ["Missing required fields"]}), 400
-    
-    try:
-        price = int(data['price'])
-        if not (1 <= price <= 30):
-            raise ValueError
-    except (TypeError, ValueError):
-        return jsonify({"errors": ["Price must be an integer between 1 and 30"]}), 400
-    
-    # Check if restaurant and pizza exist
-    restaurant = Restaurant.query.get(data['restaurant_id'])
-    pizza = Pizza.query.get(data['pizza_id'])
-    
-    if not restaurant or not pizza:
-        return jsonify({"errors": ["Restaurant or Pizza not found"]}), 404
-    
-    # Create new association
-    rp = RestaurantPizza(
-        price=price,
-        restaurant_id=restaurant.id,
-        pizza_id=pizza.id
+  data = request.get_json()
+  try:
+    new_rp = RestaurantPizza(
+      price=data['price'],
+      pizza_id=data['pizza_id'],
+      restaurant_id=data['restaurant_id']
     )
-    
-    db.session.add(rp)
+    db.session.add(new_rp)
     db.session.commit()
-    
+
     return jsonify({
-        "id": rp.id,
-        "price": rp.price,
-        "pizza": pizza.to_dict(),
-        "restaurant": restaurant.to_dict()
+      'id': new_rp.id,
+      'price': new_rp.price,
+      'pizza_id': new_rp.pizza_id,
+      'restaurant_id': new_rp.restaurant_id,
+      'pizza': {
+        'id': new_rp.pizza.id,
+        'name': new_rp.pizza.name,
+        'ingredients': new_rp.pizza.ingredients
+      },
+      'restaurant': {
+        'id': new_rp.restaurant.id,
+        'name': new_rp.restaurant.name,
+        'address': new_rp.restaurant.address
+      }
     }), 201
+  except Exception as e:
+    return jsonify({"errors": [str(e)]}), 400

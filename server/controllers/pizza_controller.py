@@ -1,9 +1,10 @@
+# server/controllers/pizza_controller.py
 from flask import Blueprint, jsonify
-from ..models import db, Pizza
+from server.models import Pizza
 
-pizzas_bp = Blueprint('pizzas', __name__)
+pizza_bp = Blueprint('pizzas', __name__, url_prefix='/pizzas')
 
-@pizzas_bp.route('', methods=['GET'])
+@pizza_bp.route('', methods=['GET'])
 def get_pizzas():
-    pizzas = Pizza.query.all()
-    return jsonify([p.to_dict() for p in pizzas])
+  pizzas = Pizza.query.all()
+  return jsonify([{'id': p.id, 'name': p.name, 'ingredients': p.ingredients} for p in pizzas])

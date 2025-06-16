@@ -1,20 +1,17 @@
-from .. import db
+# server/models/restaurant_pizza.py
+from server.models import db
+from sqlalchemy.orm import validates
 
 class RestaurantPizza(db.Model):
   __tablename__ = 'restaurant_pizzas'
 
   id = db.Column(db.Integer, primary_key=True)
   price = db.Column(db.Integer, nullable=False)
-  pizza_id = db.Column(db.Integer, db.ForeignKey('pizzas.id'))
-  restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'))
-  
-  pizza = db.relationship('Pizza', back_populates='restaurants')
-  restaurant = db.relationship('Restaurant', back_populates='pizzas')
-  
-  def to_dict(self):
-    return {
-      "id": self.id,
-      "price": self.price,
-      "pizza": self.pizza.to_dict(),
-      "restaurant": self.restaurant.to_dict()
-    }
+  restaurant_id = db.Column(db.Integer, db.ForeignKey('restaurants.id'), nullable=False)
+  pizza_id = db.Column(db.Integer, db.ForeignKey('pizzas.id'), nullable=False)
+
+  @validates('price')
+  def validate_price(self, key, value):
+    if value < 1 or value > 30:
+      raise ValueError("Price must be between 1 and 30")
+    return value
